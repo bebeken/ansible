@@ -1,0 +1,25 @@
+- name: ユーザ作成
+  become: True
+  user:
+    name: "{{ item.name }}"
+  with_items: "{{ management_users }}"
+
+- name: .sshディレクトリ作成
+  become: True
+  file:
+    path: "/home/{{ item.name }}/.ssh"
+    state: directory
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    mode: 0700
+  with_items: "{{ management_users }}"
+
+- name: authorized_keys作成
+  become: True
+  copy:
+    src: "{{ item.authorized_keys }}"
+    dest: "/home/{{ item.name }}/.ssh/authorized_keys"
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    mode: 0600
+  with_items: "{{ management_users }}"

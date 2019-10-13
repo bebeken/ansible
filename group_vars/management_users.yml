@@ -1,0 +1,2 @@
+management_users:
+  - {name: 'bebe', authorized_keys: 'bebe_authorized_keys', comment: 'bebe'}

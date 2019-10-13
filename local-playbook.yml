@@ -1,0 +1,7 @@
+- hosts: local
+  user: vagrant
+  roles:
+    - setup
+  
+  vars_files:
+    - group_vars/management_users.yml
