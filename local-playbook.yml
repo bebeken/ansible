@@ -2,6 +2,7 @@
   user: vagrant
   roles:
     - setup
+    - selinux
   
   vars_files:
     - group_vars/management_users.yml

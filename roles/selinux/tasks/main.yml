@@ -1,0 +1,23 @@
+- name: SELinux用のpythonモジュール
+  become: True
+  yum: name=libselinux-python state=installed
+
+- name: SELinux の無効化
+  become: True
+  selinux: state=disabled
+  register: selinux
+
+- name: リブート
+  become: True
+  shell: "sleep 2 && reboot"
+  async: 1
+  poll: 0
+  when: selinux.reboot_required
+
+- name: 停止待ち合わせ
+  local_action: wait_for host={{ inventory_hostname }} port=22 state=stopped
+  when: selinux.reboot_required
+
+- name: 起動待ち合わせ
+  local_action: wait_for host={{ inventory_hostname }} port=22 state=started
+  when: selinux.reboot_required
