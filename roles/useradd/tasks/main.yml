@@ -1,0 +1,22 @@
+- name: グループ作成
+  become: True
+  group:
+    name: "{{ item.name }}"
+  with_items:
+    - "{{ user_groups }}"
+
+- name: ユーザ作成
+  become: True
+  user:
+    name: "{{ item.name }}"
+    password: "{{ lookup('csvfile', item.name + ' file=password.csv delimiter=,') }}"
+    shell: /bin/false
+  with_items: "{{ users }}"
+
+- name: グループ追加
+  become: True
+  user:
+    name: "{{ item.name }}"
+    append: yes
+    groups: "{{ item.group }}"
+  with_items: "{{ users }}"

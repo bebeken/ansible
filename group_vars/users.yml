@@ -1,0 +1,3 @@
+users:
+  - {name: 'user1', group: 'usergroup', comment: 'ユーザ1'}
+  - {name: 'user2', group: 'usergroup', comment: 'ユーザ2'}
