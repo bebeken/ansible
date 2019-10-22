@@ -1,0 +1,60 @@
+- name: Sambaインストール
+  become: True
+  yum: name={{ item }} state=present
+  with_items:
+    - samba
+    - samba-client
+    - samba-client-libs
+    - samba-common
+    - samba-common-libs
+    - samba-common-tools
+    - samba-libs
+
+- name: Sambaユーザリスト
+  become: True
+  shell: pdbedit -L | awk -F":" '{print $1}'
+  register: list
+  changed_when: false
+
+- debug: var=list
+
+- name: Sambaユーザ作成
+  become: True
+  shell: echo -e "{{ lookup('csvfile', item.name + ' file=password.csv delimiter=,') }}\n{{ lookup('csvfile', item.name + ' file=password.csv delimiter=,') }}\n" | pdbedit -t -a {{ item.name }}
+  when: list.stdout_lines.count( item.name ) < 1
+  with_items: "{{ users }}"
+  register: shell
+
+- name: Shareフォルダ作成
+  become: True
+  file:
+    path: /samba/share
+    state: directory
+    owner: nobody
+    group: nobody
+    mode: 0777
+
+- name: firewalld設定
+  become: True
+  firewalld:
+    service: samba
+    permanent: True
+    zone: public
+    state: enabled
+
+- name: firewalld再起動
+  become: True
+  service:
+    name: firewalld
+    state: restarted
+    enabled: yes
+
+- name: Samba再起動
+  become: True
+  service:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  with_items:
+    - smb
+    - nmb

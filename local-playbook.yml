@@ -4,6 +4,7 @@
     - setup
     - selinux
     - useradd
+    - samba
   
   vars_files:
     - group_vars/management_users.yml
